@@ -22,7 +22,15 @@ contract Dappazon {
     }
 
     mapping(uint256 => Item) public items;
+
+    event List(string name, uint256 cost, uint256 quantity);
+
     //list products
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "only owner can call this function");
+        _;
+    }
 
     function list(
         uint256 _tokenId,
@@ -32,7 +40,7 @@ contract Dappazon {
         uint256 _cost,
         uint256 _rating,
         uint256 _stock
-    ) public {
+    ) public onlyOwner {
         Item memory item = Item(
             _tokenId,
             _name,
@@ -43,6 +51,8 @@ contract Dappazon {
             _stock
         );
         items[_tokenId] = item;
+
+        emit List(_name, _cost, _stock);
     }
 
     // buy products

@@ -42,21 +42,31 @@ describe("Dappazon", () => {
   })
 
   describe("Listing", ()=>{
-
+    let transaction;
     beforeEach(async()=>{
-      const transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMG,COST,RATING,STOCK, {gasLimit:300000})
+      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMG,COST,RATING,STOCK, {gasLimit:300000})
       await transaction.wait()
     })
-    it("Is item listed properly", async ()=>{
-      const it = await dappazon.items(ID)
-      let name = it.name
-      console.log(name)
-      expect(name).to.equal('gazelle')
-      expect(it.image).to.equal(IMG)
-      expect(it.category).to.equal(CATEGORY)
-      expect(it.stock).to.equal(STOCK)
-      expect(it.rating).to.equal(RATING)
-      expect(it.cost).to.equal(COST)
-  })
+      it("Is item listed properly", async ()=>{
+        const it = await dappazon.items(ID)
+        let name = it.name
+        console.log(name)
+        expect(name).to.equal('gazelle')
+        expect(it.image).to.equal(IMG)
+        expect(it.category).to.equal(CATEGORY)
+        expect(it.stock).to.equal(STOCK)
+        expect(it.rating).to.equal(RATING)
+        expect(it.cost).to.equal(COST)
+    })
+
+    it ("Emits List event", () => {
+      expect(transaction).to.emit(dappazon, "List")
+    })
+
+    // it ("Only owner can list", async () => {
+    //   transaction = await dappazon.connect(buyer).list(ID, NAME, CATEGORY, IMG,COST,RATING,STOCK, {gasLimit:300000})
+    //   transaction.wait()
+    // })
+
 })
 })
