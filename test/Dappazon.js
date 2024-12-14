@@ -5,6 +5,13 @@ const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
 }
 
+const ID = 1;
+const NAME = "gazelle";
+const CATEGORY = "shoes";
+const IMG ="https://ipfs.io/ipfs/QmTYEboq8raiBs7GTUg2yLXB3PMz6HuBNgNfSZBx5Msztg/shoes.jpg";
+const COST = tokens(0.1);
+const RATING = 4;
+const STOCK = 5;
 
 
 describe("Dappazon", () => {
@@ -37,15 +44,19 @@ describe("Dappazon", () => {
   describe("Listing", ()=>{
 
     beforeEach(async()=>{
-      const transaction = await dappazon.connect(deployer).list(1, "gazelle", "shoes", "https://ipfs.io/ipfs/QmTYEboq8raiBs7GTUg2yLXB3PMz6HuBNgNfSZBx5Msztg/shoes.jpg", tokens(1),5,tokens(0.1), {gasLimit:300000})
+      const transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMG,COST,RATING,STOCK, {gasLimit:300000})
       await transaction.wait()
     })
-    it("Is item listed", async ()=>{
-      const it = await dappazon.items(1)
-      console.log(it)
+    it("Is item listed properly", async ()=>{
+      const it = await dappazon.items(ID)
       let name = it.name
       console.log(name)
-      expect(name).equal('gazelle')
+      expect(name).to.equal('gazelle')
+      expect(it.image).to.equal(IMG)
+      expect(it.category).to.equal(CATEGORY)
+      expect(it.stock).to.equal(STOCK)
+      expect(it.rating).to.equal(RATING)
+      expect(it.cost).to.equal(COST)
   })
 })
 })
