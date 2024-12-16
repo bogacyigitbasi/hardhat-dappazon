@@ -68,5 +68,45 @@ describe("Dappazon", () => {
     //   transaction.wait()
     // })
 
-})
+  })
+
+
+  describe("Buying", ()=>{
+    let transaction;
+    beforeEach(async()=>{
+      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMG,COST,RATING,STOCK, {gasLimit:300000})
+      await transaction.wait()
+
+      transaction = await dappazon.connect(buyer).buy(ID, {value: COST, gasLimit:30000000})
+      await transaction.wait()
+
+      const balance = await ethers.provider.getBalance(buyer.address);
+      console.log("buyer balance",balance)
+
+    })
+    it ("Test purchase", async ()=>{
+      transaction = await dappazon.connect(buyer).buy(ID, {value: COST, gasLimit:30000000})
+      await transaction.wait()
+
+      const balance = await ethers.provider.getBalance(buyer.address);
+      console.log("buyer balance",balance)
+    })
+
+      it ("Check balance after purchase", async () =>{
+        const balance = await ethers.provider.getBalance(dappazon.address)
+        expect(balance).to.equal(COST)
+      })
+
+      it ("Update buyer's order count", async () =>{
+        const order = await dappazon.orders(buyer.address, 1);
+
+        expect(order.time).to.be.greaterThan(0)
+        expect(order.item.name).to.equal(NAME)
+      })
+
+    it ("Emits Buy event", () => {
+      expect(transaction).to.emit(dappazon, "Buy")
+    })
+
+  })
 })

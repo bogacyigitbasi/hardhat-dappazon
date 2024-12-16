@@ -12,7 +12,7 @@ contract Dappazon {
     }
 
     struct Item {
-        uint256 tokenId;
+        uint256 Id;
         string name;
         string category;
         string image;
@@ -21,9 +21,18 @@ contract Dappazon {
         uint256 stock;
     }
 
+    struct Order {
+        uint256 time;
+        Item item;
+    }
+
     mapping(uint256 => Item) public items;
+    mapping(address => uint256) public orderCount;
+    mapping(address => mapping(uint256 => Order)) public orders;
 
     event List(string name, uint256 cost, uint256 quantity);
+
+    event Buy(address buyer, uint256 orderId, uint256 itemId);
 
     //list products
 
@@ -56,6 +65,19 @@ contract Dappazon {
     }
 
     // buy products
-
+    // payable builtin modifier in solidity
+    function buy(uint256 _Id) public payable {
+        // Fetch item
+        Item memory item = items[_Id];
+        // create order
+        Order memory order = Order(block.timestamp, item);
+        // save order
+        orderCount[msg.sender]++;
+        orders[msg.sender][orderCount[msg.sender]] = order;
+        // subtract
+        items[_Id].stock = item.stock - 1;
+        // event
+        emit Buy(msg.sender, orderCount[msg.sender], item.Id);
+    }
     // withdraw funds
 }
