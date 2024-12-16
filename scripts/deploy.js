@@ -4,6 +4,9 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
+
+// npx hardhat run ./scripts/deploy.js --network localhost
+
 const hre = require("hardhat")
 const { items } = require("../src/items.json")
 
@@ -12,6 +15,30 @@ const tokens = (n) => {
 }
 
 async function main() {
+  const [deployer] =  await hre.ethers.getSigners()
+
+  // Deploy Dappazon
+  const Dappazon = await hre.ethers.getContractFactory("Dappazon")
+  const dappazon = await Dappazon.deploy()
+  await dappazon.deployed()
+
+  console.log("contract address", dappazon.address)
+
+  // list items
+let transaction;
+  for (let i=0;i<items.length; i++){
+    transaction = await dappazon.connect(deployer).list(
+      items[i].id,
+      items[i].name,
+      items[i].category,
+      items[i].image,
+      tokens(items[i].price),
+      items[i].rating,
+      items[i].stock,
+    )
+  }
+  await transaction.wait()
+  console.log("Products listed...")
 
 }
 
