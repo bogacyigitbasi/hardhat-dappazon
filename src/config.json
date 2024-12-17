@@ -1,7 +1,7 @@
 {
     "31337": {
-        "dappazon": {
-            "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+        "contract": {
+            "address": "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e"
         }
     }
 }
