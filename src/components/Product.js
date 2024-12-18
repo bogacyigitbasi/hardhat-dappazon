@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, BigNumber } from 'react'
 import { ethers, Signer } from 'ethers'
 
 // Components
@@ -6,12 +6,19 @@ import Rating from './Rating'
 
 import close from '../assets/close.svg'
 
+const tokens = (n) => {
+  console.log("Input:", n); // Check the value of n
+  return ethers.utils.parseUnits(n.toString(), 'ether')
+}
 const Product = ({ item, provider, account, dappazon, togglePop }) => {
 
+  console.log("itemasd",item.cost)
   const buyHandler = async() => {
     const signer = await provider.getSigner();
     //buy
-    let transaction = await dappazon.connect(signer).buy(item.id, {value:item.cost, gasLimit:30000000})
+    // let amount_wei = new BigNumber(item.price).shiftedBy(18).toString();
+    console.log(item.price)
+    let transaction = await dappazon.connect(signer).buy(item.id, {value: item.cost, gasLimit:3000000})
     await transaction.wait()
   }
   return (
@@ -28,13 +35,13 @@ const Product = ({ item, provider, account, dappazon, togglePop }) => {
 
             <p>{item.address}</p>
 
-            <h2>{item.cost} ETH</h2>
+            <h2>{item.price} ETH</h2>
             <hr/>
             <p> {item.description}</p>
 
             <div className='product__order'>
                 <h1>
-                  {item.cost} ETH
+                  {item.price} ETH
                 </h1>
 
                 <p>

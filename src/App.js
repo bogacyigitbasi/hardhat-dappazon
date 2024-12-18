@@ -26,8 +26,11 @@ function App() {
   const [item, setItem] = useState({})
   // set model to render click/non
   const[toggle, setToggle] = useState(false)
-  const togglePop = () => {
+  const togglePop = (item) => {
     setItem(item)
+
+    console.log("item is ", item)
+    // console.log(item)
     toggle ? setToggle(false) : setToggle(true)
   }
 
@@ -42,16 +45,16 @@ function App() {
     let address;
     // connect to smart contract
     // const dapp = new ethers.Contract(config[31337].contract.address, ABI.abi, provider)
-    const dapp = new ethers.Contract("0xb7f8bc63bbcad18155201308c8f3540b07f84f5e", ABI, provider)
-    dapp.wait()
+    const dapp = new ethers.Contract("0x5fbdb2315678afecb367f032d93f642f64180aa3", ABI, provider)
+
     setContract(dapp)
 
-    // console.log("addresas", contract.address)
+    console.log("addresas", dapp.address)
     console.log("loading the items..")
     const items = []
 
     for (var i=0; i<9 ; i++){
-      const item = await contract.items(i+1);
+      const item = await dapp.items(i+1);
       items.push(item)
     }
 
