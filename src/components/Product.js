@@ -11,16 +11,34 @@ const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
 }
 const Product = ({ item, provider, account, dappazon, togglePop }) => {
+  const [hasBought, setHasBought] = new useState(false);
+  const [order, setOrder] = useState(null)
+  const fetchDetails = async() => {
+    const events = await dappazon.queryFilter("Buy")
+    const orders = events.filter (
+      (event) => event.orgs.buyer === account && event.args.itemId.toString() === item.id.toString()
+    )
+    if (orders.length === 0) return
+
+    const order = await dappazon.orders(account, orders[0].args.orderId)
+    setOrder(order)
+  }
 
   console.log("itemasd",item.cost)
   const buyHandler = async() => {
     const signer = await provider.getSigner();
     //buy
     // let amount_wei = new BigNumber(item.price).shiftedBy(18).toString();
-    console.log(item.price)
+    console.log(item.cost)
     let transaction = await dappazon.connect(signer).buy(item.id, {value: item.cost, gasLimit:3000000})
     await transaction.wait()
+    setHasBought(true)
   }
+
+
+  useEffect(() => {
+    fetchDetails()
+  }, [hasBought])
   return (
     <div className="product">
         <div className='product__details'>
